@@ -40,7 +40,7 @@ public class CursoController {
         response.setData(cursoService.cadastrar(curso));
         response.setStatusCode(HttpStatus.OK.value());
 
-        return ResponseEntity.status(HttpStatus.OK).body(response);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
 
     }
 
