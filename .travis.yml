@@ -1,0 +1,10 @@
+languagem: java
+jdk: "-openjdk8"
+deploy:
+  provider: heroku
+  api_key:
+    secure: c12LCpKHqZPCdLXO9l1sx9C1DUoeIRh10Zk1X1Q6/JXpNu5Uzk4CCOLFzdSBfvrIjNXSkfrWiM3zSOveOvAvycOgFOL5EWbAVE1NKNaoF1f04cWnIgFS7SiSE96qLlmxr4yva9qFXPWTWTFp4if3r8YSQCaEPxpu5YP1FUnNuSVzqYd6jvdrgcNgFMkwCPD37NX8rcUI0tWylcJJJ/TwB9YHcjiRSPO30DA9HsHWDDOw6PPeKgeLLnrVvfwXvT8etekIFMsbUnFFOTqjEUQSVpA20omIVxijyC5I4FbCAon4rkKl+xaUlWe70yAJ6FIt8XBWC/PKPZjq6rQcbmoQF42fxSOQjgm82vqD+Yk6eEHHVEkJOlkPRUsZDFSdify4pIEtp/65TxhAWhK19LAy8sSTr5PiMyhT5lPV5ogLCDvm5EkVBtSltRUgXh50MTVzWXnPwal2KHQzMzWBxR5vcuyawAiRhM5vc5+zguWH52JJFXXk2UbmyWPtBQQ7TkzFTDdFFWHZSDF/WTgU0nHtoN6DtvU8kxW4aO2yAxjynbwGFRtdB1wNiy3ISRFrlwquw0N+anI3JfQq5NMYA7HOFL/2NrdAKYBqF0veu0rIV+FexxDq2BmZwxlZnQMGkXwYNB926VvduM7khNz63pof5h3bil4C0APvUA4wC9rz4jQ=
+  app: grade-curricular-dev-daian
+  on:
+    all_branches: true
+    repo: https://github.com/DaianCosta/ms-grade-curricular.git
