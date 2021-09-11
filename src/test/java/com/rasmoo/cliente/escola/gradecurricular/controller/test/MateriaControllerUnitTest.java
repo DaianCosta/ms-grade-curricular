@@ -44,15 +44,16 @@ class MateriaControllerUnitTest {
 
     @BeforeAll
     static void init() {
+
     }
 
     @Test
     void testListarMaterias() {
-        Mockito.when(this.materiaService.listar()).thenReturn(new ArrayList<>());
+        Mockito.when(this.materiaService.listar()).thenReturn(new ArrayList<MateriaDto>());
 
         ResponseEntity<Response<List<MateriaDto>>> materias = restTemplate.exchange(
                 "http://localhost:" + this.port + "/materia/", HttpMethod.GET, null,
-                new ParameterizedTypeReference<>() {
+                new ParameterizedTypeReference<Response<List<MateriaDto>>>() {
                 });
         Assertions.assertNotNull(Objects.requireNonNull(materias.getBody()).getData());
         assertEquals(200, materias.getBody().getStatusCode());
