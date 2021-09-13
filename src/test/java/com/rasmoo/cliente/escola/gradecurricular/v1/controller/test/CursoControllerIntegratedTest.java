@@ -1,9 +1,9 @@
-package com.rasmoo.cliente.escola.gradecurricular.controller.test;
+package com.rasmoo.cliente.escola.gradecurricular.v1.controller.test;
 
 import com.rasmoo.cliente.escola.gradecurricular.entity.CursoEntity;
 import com.rasmoo.cliente.escola.gradecurricular.entity.MateriaEntity;
-import com.rasmoo.cliente.escola.gradecurricular.model.CursoModel;
-import com.rasmoo.cliente.escola.gradecurricular.model.Response;
+import com.rasmoo.cliente.escola.gradecurricular.v1.model.CursoModel;
+import com.rasmoo.cliente.escola.gradecurricular.v1.model.Response;
 import com.rasmoo.cliente.escola.gradecurricular.repository.ICursoRepository;
 import com.rasmoo.cliente.escola.gradecurricular.repository.IMateriaRepository;
 import org.junit.jupiter.api.AfterEach;
@@ -44,6 +44,9 @@ class CursoControllerIntegratedTest {
     @Autowired
     private ICursoRepository cursoRepository;
 
+    private static final String USER = "rasmoo";
+    private static final String PASSWORD = "102030";
+
     @BeforeEach
     void init() {
         this.montaMateriaBaseDeDados();
@@ -57,7 +60,7 @@ class CursoControllerIntegratedTest {
     }
 
     private String montaUri(String urn) {
-        return "http://localhost:" + this.port + "/curso/" + urn;
+        return "http://localhost:" + this.port + "/v1/curso/" + urn;
     }
 
     private void montaMateriaBaseDeDados() {
@@ -103,7 +106,9 @@ class CursoControllerIntegratedTest {
     @Test
     void testListarCursos() {
 
-        ResponseEntity<Response<List<CursoEntity>>> cursos = restTemplate.exchange(this.montaUri(""), HttpMethod.GET,
+        ResponseEntity<Response<List<CursoEntity>>> cursos = restTemplate
+                .withBasicAuth(USER, PASSWORD)
+                .exchange(this.montaUri(""), HttpMethod.GET,
                 null, new ParameterizedTypeReference<Response<List<CursoEntity>>>() {
                 });
         Assertions.assertNotNull(Objects.requireNonNull(cursos.getBody()).getData());
@@ -114,7 +119,8 @@ class CursoControllerIntegratedTest {
     @Test
     void testConsultarCursoPorCodigo() {
 
-        ResponseEntity<Response<CursoEntity>> curso = restTemplate.exchange(this.montaUri("/ENGC"), HttpMethod.GET,
+        ResponseEntity<Response<CursoEntity>> curso = restTemplate.withBasicAuth(USER, PASSWORD).
+                exchange(this.montaUri("/ENGC"), HttpMethod.GET,
                 null, new ParameterizedTypeReference<Response<CursoEntity>>() {
                 });
         Assertions.assertNotNull(Objects.requireNonNull(curso.getBody()).getData());
@@ -136,7 +142,8 @@ class CursoControllerIntegratedTest {
 
         HttpEntity<CursoModel> request = new HttpEntity<>(cursoModel);
 
-        ResponseEntity<Response<Boolean>> curso = restTemplate.exchange(this.montaUri("/"), HttpMethod.PUT, request,
+        ResponseEntity<Response<Boolean>> curso = restTemplate.withBasicAuth(USER, PASSWORD)
+                .exchange(this.montaUri("/"), HttpMethod.PUT, request,
                 new ParameterizedTypeReference<Response<Boolean>>() {
                 });
         CursoEntity cursoAtualizado = this.cursoRepository.findCursoByCodigo(cursoEntity.getCodigo());
@@ -162,7 +169,8 @@ class CursoControllerIntegratedTest {
 
         HttpEntity<CursoModel> request = new HttpEntity<>(cursoModel);
 
-        ResponseEntity<Response<Boolean>> curso = restTemplate.exchange(this.montaUri(""), HttpMethod.POST, request,
+        ResponseEntity<Response<Boolean>> curso = restTemplate.withBasicAuth(USER, PASSWORD)
+                .exchange(this.montaUri(""), HttpMethod.POST, request,
                 new ParameterizedTypeReference<Response<Boolean>>() {
                 });
         List<CursoEntity> listCursoAtualizado = this.cursoRepository.findAll();
@@ -178,7 +186,8 @@ class CursoControllerIntegratedTest {
         List<CursoEntity> materiaList = this.cursoRepository.findAll();
         Long id = materiaList.get(0).getId();
 
-        ResponseEntity<Response<Boolean>> curso = restTemplate.exchange(this.montaUri(id.toString()), HttpMethod.DELETE,
+        ResponseEntity<Response<Boolean>> curso = restTemplate.withBasicAuth(USER, PASSWORD).
+                exchange(this.montaUri(id.toString()), HttpMethod.DELETE,
                 null, new ParameterizedTypeReference<Response<Boolean>>() {
                 });
 

@@ -1,6 +1,7 @@
 package com.rasmoo.cliente.escola.gradecurricular.entity;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.Column;
@@ -43,7 +44,7 @@ public class CursoEntity implements Serializable{
     @Column(name = "cod")
     private String codigo;
 
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.EAGER)
     @JoinColumn(name="materia_id")
-    private List<MateriaEntity> materias;
+    private List<MateriaEntity> materias = new ArrayList<>();
 }

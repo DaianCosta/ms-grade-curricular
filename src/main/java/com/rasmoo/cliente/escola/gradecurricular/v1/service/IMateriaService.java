@@ -1,7 +1,6 @@
-package com.rasmoo.cliente.escola.gradecurricular.service;
+package com.rasmoo.cliente.escola.gradecurricular.v1.service;
 
-import com.rasmoo.cliente.escola.gradecurricular.dto.MateriaDto;
-import com.rasmoo.cliente.escola.gradecurricular.entity.MateriaEntity;
+import com.rasmoo.cliente.escola.gradecurricular.v1.dto.MateriaDto;
 
 import java.util.List;
 

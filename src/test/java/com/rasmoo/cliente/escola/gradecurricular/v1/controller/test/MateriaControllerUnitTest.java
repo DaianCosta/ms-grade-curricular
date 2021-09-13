@@ -1,8 +1,8 @@
-package com.rasmoo.cliente.escola.gradecurricular.controller.test;
+package com.rasmoo.cliente.escola.gradecurricular.v1.controller.test;
 
-import com.rasmoo.cliente.escola.gradecurricular.dto.MateriaDto;
-import com.rasmoo.cliente.escola.gradecurricular.model.Response;
-import com.rasmoo.cliente.escola.gradecurricular.service.IMateriaService;
+import com.rasmoo.cliente.escola.gradecurricular.v1.dto.MateriaDto;
+import com.rasmoo.cliente.escola.gradecurricular.v1.model.Response;
+import com.rasmoo.cliente.escola.gradecurricular.v1.service.IMateriaService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -43,6 +43,13 @@ class MateriaControllerUnitTest {
 
     private static MateriaDto materiaDto;
 
+    private static final String USER = "rasmoo";
+    private static final String PASSWORD = "102030";
+
+    private String montaUri(String urn) {
+        return "http://localhost:" + this.port + "/v1/materia/" + urn;
+    }
+
     @BeforeAll
     static void init() {
 
@@ -59,8 +66,8 @@ class MateriaControllerUnitTest {
     void testListarMaterias() {
         Mockito.when(this.materiaService.listar()).thenReturn(new ArrayList<MateriaDto>());
 
-        ResponseEntity<Response<List<MateriaDto>>> materias = restTemplate.exchange(
-                "http://localhost:" + this.port + "/materia/", HttpMethod.GET, null,
+        ResponseEntity<Response<List<MateriaDto>>> materias = restTemplate.withBasicAuth(USER, PASSWORD).exchange(
+                this.montaUri(""), HttpMethod.GET, null,
                 new ParameterizedTypeReference<Response<List<MateriaDto>>>() {
                 });
         Assertions.assertNotNull(Objects.requireNonNull(materias.getBody()).getData());
@@ -71,8 +78,8 @@ class MateriaControllerUnitTest {
     void testConsultarMateria() {
         Mockito.when(this.materiaService.consultar(1L)).thenReturn(materiaDto);
 
-        ResponseEntity<Response<MateriaDto>> materias = restTemplate.exchange(
-                "http://localhost:" + this.port + "/materia/1", HttpMethod.GET, null,
+        ResponseEntity<Response<MateriaDto>> materias = restTemplate.withBasicAuth(USER, PASSWORD).exchange(
+                this.montaUri("1"), HttpMethod.GET, null,
                 new ParameterizedTypeReference<Response<MateriaDto>>() {
                 });
         Assertions.assertNotNull(Objects.requireNonNull(materias.getBody()).getData());
@@ -85,8 +92,8 @@ class MateriaControllerUnitTest {
 
         HttpEntity<MateriaDto> request = new HttpEntity<>(materiaDto);
 
-        ResponseEntity<Response<Boolean>> materias = restTemplate.exchange(
-                "http://localhost:" + this.port + "/materia/", HttpMethod.POST, request,
+        ResponseEntity<Response<Boolean>> materias = restTemplate.withBasicAuth(USER, PASSWORD).exchange(
+                this.montaUri(""), HttpMethod.POST, request,
                 new ParameterizedTypeReference<Response<Boolean>>() {
                 });
         Assertions.assertTrue(Objects.requireNonNull(materias.getBody()).getData());
@@ -99,8 +106,8 @@ class MateriaControllerUnitTest {
 
         HttpEntity<MateriaDto> request = new HttpEntity<>(materiaDto);
 
-        ResponseEntity<Response<Boolean>> materias = restTemplate.exchange(
-                "http://localhost:" + this.port + "/materia/", HttpMethod.PUT, request,
+        ResponseEntity<Response<Boolean>> materias = restTemplate.withBasicAuth(USER, PASSWORD).exchange(
+                this.montaUri(""), HttpMethod.PUT, request,
                 new ParameterizedTypeReference<Response<Boolean>>() {
                 });
         Assertions.assertTrue(Objects.requireNonNull(materias.getBody()).getData());
@@ -111,8 +118,8 @@ class MateriaControllerUnitTest {
     void testExcluirMateria() {
         Mockito.when(this.materiaService.excluir(1L)).thenReturn(Boolean.TRUE);
 
-        ResponseEntity<Response<Boolean>> materias = restTemplate.exchange(
-                "http://localhost:" + this.port + "/materia/1", HttpMethod.DELETE, null,
+        ResponseEntity<Response<Boolean>> materias = restTemplate.withBasicAuth(USER, PASSWORD).exchange(
+                this.montaUri("1"), HttpMethod.DELETE, null,
                 new ParameterizedTypeReference<Response<Boolean>>() {
                 });
         Assertions.assertTrue(Objects.requireNonNull(materias.getBody()).getData());
@@ -123,8 +130,8 @@ class MateriaControllerUnitTest {
     void testConsultarMateriasPorHoraMinima() {
         Mockito.when(this.materiaService.listarPorHorarioMinimo(64)).thenReturn(new ArrayList<MateriaDto>());
 
-        ResponseEntity<Response<List<MateriaDto>>> materias = restTemplate.exchange(
-                "http://localhost:" + this.port + "/materia/horario-minimo/64", HttpMethod.GET, null,
+        ResponseEntity<Response<List<MateriaDto>>> materias = restTemplate.withBasicAuth(USER, PASSWORD).exchange(
+                this.montaUri("horario-minimo/64"), HttpMethod.GET, null,
                 new ParameterizedTypeReference<Response<List<MateriaDto>>>() {
                 });
         Assertions.assertNotNull(Objects.requireNonNull(materias.getBody()).getData());
@@ -135,8 +142,8 @@ class MateriaControllerUnitTest {
     void testConsultarMateriasPorFrequencia() {
         Mockito.when(this.materiaService.listarPorFrequencia(1)).thenReturn(new ArrayList<MateriaDto>());
 
-        ResponseEntity<Response<List<MateriaDto>>> materias = restTemplate.exchange(
-                "http://localhost:" + this.port + "/materia/frequencia/1", HttpMethod.GET, null,
+        ResponseEntity<Response<List<MateriaDto>>> materias = restTemplate.withBasicAuth(USER, PASSWORD).exchange(
+                this.montaUri("frequencia/1"), HttpMethod.GET, null,
                 new ParameterizedTypeReference<Response<List<MateriaDto>>>() {
                 });
         Assertions.assertNotNull(Objects.requireNonNull(materias.getBody()).getData());

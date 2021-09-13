@@ -1,8 +1,9 @@
-package com.rasmoo.cliente.escola.gradecurricular.handler;
+package com.rasmoo.cliente.escola.gradecurricular.v1.handler;
 
 import java.util.HashMap;
 import java.util.Map;
 
+import com.rasmoo.cliente.escola.gradecurricular.v1.exception.CursoException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -10,11 +11,11 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-import com.rasmoo.cliente.escola.gradecurricular.exception.MateriaException;
-import com.rasmoo.cliente.escola.gradecurricular.model.ErrorMapResponse;
-import com.rasmoo.cliente.escola.gradecurricular.model.ErrorMapResponse.ErrorMapResponseBuilder;
-import com.rasmoo.cliente.escola.gradecurricular.model.ErrorResponse;
-import com.rasmoo.cliente.escola.gradecurricular.model.ErrorResponse.ErrorResponseBuilder;
+import com.rasmoo.cliente.escola.gradecurricular.v1.exception.MateriaException;
+import com.rasmoo.cliente.escola.gradecurricular.v1.model.ErrorMapResponse;
+import com.rasmoo.cliente.escola.gradecurricular.v1.model.ErrorMapResponse.ErrorMapResponseBuilder;
+import com.rasmoo.cliente.escola.gradecurricular.v1.model.ErrorResponse;
+import com.rasmoo.cliente.escola.gradecurricular.v1.model.ErrorResponse.ErrorResponseBuilder;
 
 @ControllerAdvice
 public class ResourceHandler {
@@ -39,6 +40,16 @@ public class ResourceHandler {
 
     @ExceptionHandler(MateriaException.class)
     public ResponseEntity<ErrorResponse> handlerMateriaException(MateriaException m){
+        ErrorResponseBuilder erro = ErrorResponse.builder();
+        erro.httpStatus(m.getHttpStatus().value());
+        erro.mensagem(m.getMessage());
+        erro.timeStamp(System.currentTimeMillis());
+        return ResponseEntity.status(m.getHttpStatus()).body(erro.build());
+
+    }
+
+    @ExceptionHandler(CursoException.class)
+    public ResponseEntity<ErrorResponse> handlerCursoException(MateriaException m){
         ErrorResponseBuilder erro = ErrorResponse.builder();
         erro.httpStatus(m.getHttpStatus().value());
         erro.mensagem(m.getMessage());

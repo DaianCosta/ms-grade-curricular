@@ -1,4 +1,4 @@
-package com.rasmoo.cliente.escola.gradecurricular.dto;
+package com.rasmoo.cliente.escola.gradecurricular.v1.dto;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
@@ -6,7 +6,6 @@ import javax.validation.constraints.NotBlank;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.hateoas.Link;
 import org.springframework.hateoas.RepresentationModel;
 
 @Data

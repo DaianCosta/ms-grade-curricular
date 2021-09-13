@@ -1,19 +1,19 @@
-package com.rasmoo.cliente.escola.gradecurricular.service;
+package com.rasmoo.cliente.escola.gradecurricular.v1.service;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import com.rasmoo.cliente.escola.gradecurricular.exception.CursoException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import com.rasmoo.cliente.escola.gradecurricular.constant.MensagensConstant;
+import com.rasmoo.cliente.escola.gradecurricular.v1.constant.MensagensConstant;
 import com.rasmoo.cliente.escola.gradecurricular.entity.CursoEntity;
 import com.rasmoo.cliente.escola.gradecurricular.entity.MateriaEntity;
-import com.rasmoo.cliente.escola.gradecurricular.model.CursoModel;
+import com.rasmoo.cliente.escola.gradecurricular.v1.exception.CursoException;
+import com.rasmoo.cliente.escola.gradecurricular.v1.model.CursoModel;
 import com.rasmoo.cliente.escola.gradecurricular.repository.ICursoRepository;
 import com.rasmoo.cliente.escola.gradecurricular.repository.IMateriaRepository;
 
@@ -46,15 +46,14 @@ public class CursoService implements ICursoService {
              * Não permite fazer cadastro de cursos com mesmos códigos.
              */
             if (this.cursoRepository.findCursoByCodigo(cursoModel.getCodCurso()) != null) {
-                throw new CursoException(MensagensConstant.ERRO_CURSO_CADASTRADO_ANTERIORMENTE
-                        .getValor(), HttpStatus.BAD_REQUEST);
+                throw new CursoException(MensagensConstant.ERRO_CURSO_CADASTRADO_ANTERIORMENTE.getValor(),
+                        HttpStatus.BAD_REQUEST);
             }
             return this.cadastrarOuAtualizar(cursoModel);
 
-        }catch (CursoException c) {
+        } catch (CursoException c) {
             throw c;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new CursoException(MensagensConstant.ERRO_GENERICO.getValor(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -67,7 +66,7 @@ public class CursoService implements ICursoService {
         } catch (CursoException c) {
             throw c;
         } catch (Exception e) {
-            throw e;
+            throw new CursoException(MensagensConstant.ERRO_GENERICO.getValor(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -81,6 +80,7 @@ public class CursoService implements ICursoService {
             if (curso == null) {
                 throw new CursoException(MensagensConstant.ERRO_CURSO_NAO_ENCONTRADO.getValor(), HttpStatus.NOT_FOUND);
             }
+
             return curso;
 
         } catch (CursoException c) {
@@ -93,20 +93,24 @@ public class CursoService implements ICursoService {
     @CachePut(unless = "#result.size()<3")
     @Override
     public List<CursoEntity> listar() {
-        return this.cursoRepository.findAll();
+        try {
+            return this.cursoRepository.findAll();
+        } catch (Exception e) {
+            throw new CursoException(MensagensConstant.ERRO_GENERICO.getValor(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @Override
     public Boolean excluir(Long cursoId) {
         try {
-            if(this.cursoRepository.findById(cursoId).isPresent()) {
+            if (this.cursoRepository.findById(cursoId).isPresent()) {
                 this.cursoRepository.deleteById(cursoId);
                 return Boolean.TRUE;
             }
             throw new CursoException(MensagensConstant.ERRO_CURSO_NAO_ENCONTRADO.getValor(), HttpStatus.NOT_FOUND);
-        }catch (CursoException c) {
+        } catch (CursoException c) {
             throw c;
-        }catch (Exception e) {
+        } catch (Exception e) {
             throw new CursoException(MensagensConstant.ERRO_GENERICO.getValor(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -119,7 +123,7 @@ public class CursoService implements ICursoService {
     private Boolean cadastrarOuAtualizar(CursoModel cursoModel) {
         List<MateriaEntity> listMateriaEntity = new ArrayList<>();
 
-        if (!cursoModel.getMaterias().isEmpty()) {
+        if (cursoModel.getMaterias() != null && !cursoModel.getMaterias().isEmpty()) {
 
             cursoModel.getMaterias().forEach(materia -> {
                 if (this.materiaRepository.findById(materia).isPresent())
@@ -128,7 +132,7 @@ public class CursoService implements ICursoService {
         }
 
         CursoEntity cursoEntity = new CursoEntity();
-        if(cursoModel.getId()!=null) {
+        if (cursoModel.getId() != null) {
             cursoEntity.setId(cursoModel.getId());
         }
         cursoEntity.setCodigo(cursoModel.getCodCurso());
