@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -32,7 +33,7 @@ import com.rasmoo.cliente.escola.gradecurricular.v1.service.CursoService;
 
 @ExtendWith(MockitoExtension.class)
 @RunWith(JUnitPlatform.class)
-public class CursoServiceUnitTest {
+class CursoServiceUnitTest {
 
     @Mock
     private IMateriaRepository materiaRepository;
@@ -48,7 +49,7 @@ public class CursoServiceUnitTest {
     private static CursoEntity cursoEntity;
 
     @BeforeAll
-    public static void init() {
+    static void init() {
 
         materiaEntity = new MateriaEntity();
         materiaEntity.setId(1L);
@@ -74,7 +75,7 @@ public class CursoServiceUnitTest {
      */
 
     @Test
-    public void testListarSucesso() {
+    void testListarSucesso() {
         List<CursoEntity> listCurso = new ArrayList<>();
         listCurso.add(cursoEntity);
 
@@ -82,7 +83,7 @@ public class CursoServiceUnitTest {
 
         List<CursoEntity> listCursoEntity = this.cursoService.listar();
 
-        assertNotNull(listCursoEntity);
+        Assertions.assertNotNull(listCursoEntity);
         assertEquals("CC", listCursoEntity.get(0).getCodigo());
         assertEquals(1, listCursoEntity.get(0).getId());
         assertEquals(1, listCursoEntity.size());
@@ -92,11 +93,11 @@ public class CursoServiceUnitTest {
     }
 
     @Test
-    public void testConsultarSucesso() {
+    void testConsultarSucesso() {
         Mockito.when(this.cursoRepository.findCursoByCodigo("CC")).thenReturn(cursoEntity);
         CursoEntity cursoEntity = this.cursoService.consultarPorCodigo("CC");
 
-        assertNotNull(cursoEntity);
+        Assertions.assertNotNull(cursoEntity);
         assertEquals("CC", cursoEntity.getCodigo());
         assertEquals(1, cursoEntity.getId());
 
@@ -104,7 +105,7 @@ public class CursoServiceUnitTest {
     }
 
     @Test
-    public void testCadastrarSucesso() {
+    void testCadastrarSucesso() {
         List<Long> listId = new ArrayList<Long>();
         listId.add(1L);
 
@@ -124,7 +125,7 @@ public class CursoServiceUnitTest {
 
         Boolean sucesso = this.cursoService.cadastrar(cursoModel);
 
-        assertTrue(sucesso);
+        Assertions.assertTrue(sucesso);
 
         Mockito.verify(this.cursoRepository, times(1)).findCursoByCodigo("CC");
         Mockito.verify(this.cursoRepository, times(1)).save(novoCursoEntity);
@@ -133,7 +134,7 @@ public class CursoServiceUnitTest {
     }
 
     @Test
-    public void testAtualizarSucesso() {
+    void testAtualizarSucesso() {
         List<Long> listId = new ArrayList<Long>();
         listId.add(1L);
 
@@ -149,7 +150,7 @@ public class CursoServiceUnitTest {
 
         Boolean sucesso = this.cursoService.atualizar(cursoModel);
 
-        assertTrue(sucesso);
+        Assertions.assertTrue(sucesso);
 
         Mockito.verify(this.cursoRepository, times(1)).findCursoByCodigo("CC");
         Mockito.verify(this.cursoRepository, times(1)).save(cursoEntity);
@@ -158,12 +159,12 @@ public class CursoServiceUnitTest {
     }
 
     @Test
-    public void testExcluirSucesso() {
+    void testExcluirSucesso() {
 
         Mockito.when(this.cursoRepository.findById(1L)).thenReturn(Optional.of(cursoEntity));
         Boolean sucesso = this.cursoService.excluir(1L);
 
-        assertTrue(sucesso);
+        Assertions.assertTrue(sucesso);
 
         Mockito.verify(this.cursoRepository, times(1)).findById(1L);
         Mockito.verify(this.cursoRepository, times(1)).deleteById(1L);
@@ -176,7 +177,7 @@ public class CursoServiceUnitTest {
      */
 
     @Test
-    public void testAtualizarThrowCursoException() {
+    void testAtualizarThrowCursoException() {
 
         List<Long> listId = new ArrayList<Long>();
         listId.add(1L);
@@ -204,7 +205,7 @@ public class CursoServiceUnitTest {
     }
 
     @Test
-    public void testExcluirThrowCursoException() {
+    void testExcluirThrowCursoException() {
 
         Mockito.when(this.cursoRepository.findById(1L)).thenReturn(Optional.empty());
 
@@ -223,7 +224,7 @@ public class CursoServiceUnitTest {
     }
 
     @Test
-    public void testCadastrarComIdThrowMateriaException() {
+    void testCadastrarComIdThrowMateriaException() {
 
         CursoModel cursoModel = new CursoModel();
         cursoModel.setId(1L);
@@ -245,7 +246,7 @@ public class CursoServiceUnitTest {
     }
 
     @Test
-    public void testCadastrarComCodigoExistenteThrowMateriaException() {
+    void testCadastrarComCodigoExistenteThrowMateriaException() {
 
         CursoModel cursoModel = new CursoModel();
         cursoModel.setCodCurso("CC");
@@ -274,7 +275,7 @@ public class CursoServiceUnitTest {
      */
 
     @Test
-    public void testAtualizarThrowException() {
+    void testAtualizarThrowException() {
 
         List<Long> listId = new ArrayList<Long>();
         listId.add(1L);
@@ -305,7 +306,7 @@ public class CursoServiceUnitTest {
     }
 
     @Test
-    public void testCadastrarThrowException() {
+    void testCadastrarThrowException() {
 
         List<Long> listId = new ArrayList<Long>();
         listId.add(1L);
@@ -340,7 +341,7 @@ public class CursoServiceUnitTest {
     }
 
     @Test
-    public void testConsultarThrowException() {
+    void testConsultarThrowException() {
 
         Mockito.when(this.cursoRepository.findCursoByCodigo("CC")).thenThrow(IllegalStateException.class);
 
@@ -358,7 +359,7 @@ public class CursoServiceUnitTest {
     }
 
     @Test
-    public void testListarThrowException() {
+    void testListarThrowException() {
 
         Mockito.when(this.cursoRepository.findAll()).thenThrow(IllegalStateException.class);
 
@@ -376,7 +377,7 @@ public class CursoServiceUnitTest {
     }
 
     @Test
-    public void testExcluirThrowException() {
+    void testExcluirThrowException() {
 
         Mockito.when(this.cursoRepository.findById(1L)).thenReturn(Optional.of(cursoEntity));
         Mockito.doThrow(IllegalStateException.class).when(this.cursoRepository).deleteById(1L);

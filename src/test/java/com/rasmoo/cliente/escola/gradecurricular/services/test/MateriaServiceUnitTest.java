@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,16 +22,16 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 
+import com.rasmoo.cliente.escola.gradecurricular.entity.MateriaEntity;
+import com.rasmoo.cliente.escola.gradecurricular.repository.IMateriaRepository;
 import com.rasmoo.cliente.escola.gradecurricular.v1.constant.MensagensConstant;
 import com.rasmoo.cliente.escola.gradecurricular.v1.dto.MateriaDto;
-import com.rasmoo.cliente.escola.gradecurricular.entity.MateriaEntity;
 import com.rasmoo.cliente.escola.gradecurricular.v1.exception.MateriaException;
-import com.rasmoo.cliente.escola.gradecurricular.repository.IMateriaRepository;
 import com.rasmoo.cliente.escola.gradecurricular.v1.service.MateriaService;
 
 @ExtendWith(MockitoExtension.class)
 @RunWith(JUnitPlatform.class)
-public class MateriaServiceUnitTest {
+class MateriaServiceUnitTest {
 
     @Mock
     private IMateriaRepository materiaRepository;
@@ -41,7 +42,7 @@ public class MateriaServiceUnitTest {
     private static MateriaEntity materiaEntity;
 
     @BeforeAll
-    public static void init() {
+    static void init() {
 
         materiaEntity = new MateriaEntity();
         materiaEntity.setId(1L);
@@ -59,7 +60,7 @@ public class MateriaServiceUnitTest {
      */
 
     @Test
-    public void testListarSucesso() {
+    void testListarSucesso() {
         List<MateriaEntity> listMateria = new ArrayList<>();
         listMateria.add(materiaEntity);
 
@@ -67,10 +68,10 @@ public class MateriaServiceUnitTest {
 
         List<MateriaDto> listMateriaDto = this.materiaService.listar();
 
-        assertNotNull(listMateriaDto);
+        Assertions.assertNotNull(listMateriaDto);
         assertEquals("ILP", listMateriaDto.get(0).getCodigo());
         assertEquals(1, listMateriaDto.get(0).getId());
-        assertEquals("/materia/1", listMateriaDto.get(0).getLinks().getRequiredLink("self").getHref());
+        assertEquals("/v1/materia/1", listMateriaDto.get(0).getLinks().getRequiredLink("self").getHref());
         assertEquals(1, listMateriaDto.size());
 
         Mockito.verify(this.materiaRepository, times(1)).findAll();
@@ -78,7 +79,7 @@ public class MateriaServiceUnitTest {
     }
 
     @Test
-    public void testListarPorHorarioMinimoSucesso() {
+    void testListarPorHorarioMinimoSucesso() {
         List<MateriaEntity> listMateria = new ArrayList<>();
         listMateria.add(materiaEntity);
 
@@ -86,7 +87,7 @@ public class MateriaServiceUnitTest {
 
         List<MateriaDto> listMateriaDto = this.materiaService.listarPorHorarioMinimo(64);
 
-        assertNotNull(listMateriaDto);
+        Assertions.assertNotNull(listMateriaDto);
         assertEquals("ILP", listMateriaDto.get(0).getCodigo());
         assertEquals(1, listMateriaDto.get(0).getId());
         assertEquals(1, listMateriaDto.size());
@@ -96,7 +97,7 @@ public class MateriaServiceUnitTest {
     }
 
     @Test
-    public void testListarPorFrequenciaSucesso() {
+    void testListarPorFrequenciaSucesso() {
         List<MateriaEntity> listMateria = new ArrayList<>();
         listMateria.add(materiaEntity);
 
@@ -104,7 +105,7 @@ public class MateriaServiceUnitTest {
 
         List<MateriaDto> listMateriaDto = this.materiaService.listarPorFrequencia(1);
 
-        assertNotNull(listMateriaDto);
+        Assertions.assertNotNull(listMateriaDto);
         assertEquals("ILP", listMateriaDto.get(0).getCodigo());
         assertEquals(1, listMateriaDto.get(0).getId());
         assertEquals(1, listMateriaDto.size());
@@ -114,11 +115,11 @@ public class MateriaServiceUnitTest {
     }
 
     @Test
-    public void testConsultarSucesso() {
+    void testConsultarSucesso() {
         Mockito.when(this.materiaRepository.findById(1L)).thenReturn(Optional.of(materiaEntity));
         MateriaDto materiaDto = this.materiaService.consultar(1L);
 
-        assertNotNull(materiaDto);
+        Assertions.assertNotNull(materiaDto);
         assertEquals("ILP", materiaDto.getCodigo());
         assertEquals(1, materiaDto.getId());
         assertEquals(1, materiaDto.getFrequencia());
@@ -127,7 +128,7 @@ public class MateriaServiceUnitTest {
     }
 
     @Test
-    public void testCadastrarSucesso() {
+    void testCadastrarSucesso() {
 
         MateriaDto materiaDto = new MateriaDto();
         materiaDto.setCodigo("ILP");
@@ -142,7 +143,7 @@ public class MateriaServiceUnitTest {
 
         Boolean sucesso = this.materiaService.cadastrar(materiaDto);
 
-        assertTrue(sucesso);
+        Assertions.assertTrue(sucesso);
 
         Mockito.verify(this.materiaRepository, times(1)).findByCodigo("ILP");
         Mockito.verify(this.materiaRepository, times(1)).save(materiaEntity);
@@ -152,7 +153,7 @@ public class MateriaServiceUnitTest {
     }
 
     @Test
-    public void testAtualizarSucesso() {
+    void testAtualizarSucesso() {
 
         MateriaDto materiaDto = new MateriaDto();
         materiaDto.setId(1L);
@@ -167,7 +168,7 @@ public class MateriaServiceUnitTest {
 
         Boolean sucesso = this.materiaService.atualizar(materiaDto);
 
-        assertTrue(sucesso);
+        Assertions.assertTrue(sucesso);
 
         Mockito.verify(this.materiaRepository, times(0)).findByCodigo("ILP");
         Mockito.verify(this.materiaRepository, times(1)).findById(1L);
@@ -177,12 +178,12 @@ public class MateriaServiceUnitTest {
     }
 
     @Test
-    public void testExcluirSucesso() {
+    void testExcluirSucesso() {
 
         Mockito.when(this.materiaRepository.findById(1L)).thenReturn(Optional.of(materiaEntity));
         Boolean sucesso = this.materiaService.excluir(1L);
 
-        assertTrue(sucesso);
+        Assertions.assertTrue(sucesso);
 
         Mockito.verify(this.materiaRepository, times(0)).findByCodigo("ILP");
         Mockito.verify(this.materiaRepository, times(1)).findById(1L);
@@ -196,7 +197,7 @@ public class MateriaServiceUnitTest {
      *
      */
     @Test
-    public void testAtualizarThrowMateriaException() {
+    void testAtualizarThrowMateriaException() {
 
         MateriaDto materiaDto = new MateriaDto();
         materiaDto.setId(1L);
@@ -223,7 +224,7 @@ public class MateriaServiceUnitTest {
     }
 
     @Test
-    public void testExcluirThrowMateriaException() {
+    void testExcluirThrowMateriaException() {
 
 
         Mockito.when(this.materiaRepository.findById(1L)).thenReturn(Optional.empty());
@@ -243,7 +244,7 @@ public class MateriaServiceUnitTest {
     }
 
     @Test
-    public void testCadastrarComIdThrowMateriaException() {
+    void testCadastrarComIdThrowMateriaException() {
 
         MateriaDto materiaDto = new MateriaDto();
         materiaDto.setId(1L);
@@ -267,7 +268,7 @@ public class MateriaServiceUnitTest {
     }
 
     @Test
-    public void testCadastrarComCodigoExistenteThrowMateriaException() {
+    void testCadastrarComCodigoExistenteThrowMateriaException() {
 
         MateriaDto materiaDto = new MateriaDto();
         materiaDto.setCodigo("ILP");
@@ -291,10 +292,161 @@ public class MateriaServiceUnitTest {
 
     }
 
+
     /*
      *
      * CENARIOS DE THROW EXCEPTION
      *
      */
+
+    @Test
+   void testAtualizarThrowException() {
+
+        MateriaDto materiaDto = new MateriaDto();
+        materiaDto.setId(1L);
+        materiaDto.setCodigo("ILP");
+        materiaDto.setFrequencia(1);
+        materiaDto.setHoras(64);
+        materiaDto.setNome("INTRODUCAO A LINGUAGEM DE PROGRAMACAO");
+
+
+        Mockito.when(this.materiaRepository.findById(1L)).thenReturn(Optional.of(materiaEntity));
+        Mockito.when(this.materiaRepository.save(materiaEntity)).thenThrow(IllegalStateException.class);
+
+        MateriaException materiaException;
+
+        materiaException = assertThrows(MateriaException.class, ()->{
+            this.materiaService.atualizar(materiaDto);
+        });
+
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, materiaException.getHttpStatus());
+        assertEquals(MensagensConstant.ERRO_GENERICO.getValor(), materiaException.getMessage());
+
+        Mockito.verify(this.materiaRepository, times(1)).findById(1L);
+        Mockito.verify(this.materiaRepository, times(1)).save(materiaEntity);
+
+    }
+
+    @Test
+    void testCadastrarThrowException() {
+
+        MateriaDto materiaDto = new MateriaDto();
+        materiaDto.setCodigo("ILP");
+        materiaDto.setFrequencia(1);
+        materiaDto.setHoras(64);
+        materiaDto.setNome("INTRODUCAO A LINGUAGEM DE PROGRAMACAO");
+
+        materiaEntity.setId(null);
+
+        Mockito.when(this.materiaRepository.findByCodigo("ILP")).thenReturn(null);
+        Mockito.when(this.materiaRepository.save(materiaEntity)).thenThrow(IllegalStateException.class);
+
+        MateriaException materiaException;
+
+        materiaException = assertThrows(MateriaException.class, ()->{
+            this.materiaService.cadastrar(materiaDto);
+        });
+
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, materiaException.getHttpStatus());
+        assertEquals(MensagensConstant.ERRO_GENERICO.getValor(), materiaException.getMessage());
+
+        Mockito.verify(this.materiaRepository, times(1)).findByCodigo("ILP");
+        Mockito.verify(this.materiaRepository, times(1)).save(materiaEntity);
+
+        materiaEntity.setId(1L);
+
+    }
+
+    @Test
+    void testConsultarThrowException() {
+
+        Mockito.when(this.materiaRepository.findById(1L)).thenThrow(IllegalStateException.class);
+
+        MateriaException materiaException;
+
+        materiaException = assertThrows(MateriaException.class, ()->{
+            this.materiaService.consultar(1L);
+        });
+
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, materiaException.getHttpStatus());
+        assertEquals(MensagensConstant.ERRO_GENERICO.getValor(), materiaException.getMessage());
+
+        Mockito.verify(this.materiaRepository, times(1)).findById(1L);
+
+    }
+
+    @Test
+    void testListarThrowException() {
+
+        Mockito.when(this.materiaRepository.findAll()).thenThrow(IllegalStateException.class);
+
+        MateriaException materiaException;
+
+        materiaException = assertThrows(MateriaException.class, ()->{
+            this.materiaService.listar();
+        });
+
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, materiaException.getHttpStatus());
+        assertEquals(MensagensConstant.ERRO_GENERICO.getValor(), materiaException.getMessage());
+
+        Mockito.verify(this.materiaRepository, times(1)).findAll();
+
+    }
+
+    @Test
+    void testListarPorHorarioMinimoThrowException() {
+
+        Mockito.when(this.materiaRepository.findByHoraMinima(64)).thenThrow(IllegalStateException.class);
+
+        MateriaException materiaException;
+
+        materiaException = assertThrows(MateriaException.class, ()->{
+            this.materiaService.listarPorHorarioMinimo(64);
+        });
+
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, materiaException.getHttpStatus());
+        assertEquals(MensagensConstant.ERRO_GENERICO.getValor(), materiaException.getMessage());
+
+        Mockito.verify(this.materiaRepository, times(1)).findByHoraMinima(64);
+
+    }
+
+    @Test
+    void testListarPorFrequenciaThrowException() {
+
+        Mockito.when(this.materiaRepository.findByFrequencia(1)).thenThrow(IllegalStateException.class);
+
+        MateriaException materiaException;
+
+        materiaException = assertThrows(MateriaException.class, ()->{
+            this.materiaService.listarPorFrequencia(1);
+        });
+
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, materiaException.getHttpStatus());
+        assertEquals(MensagensConstant.ERRO_GENERICO.getValor(), materiaException.getMessage());
+
+        Mockito.verify(this.materiaRepository, times(1)).findByFrequencia(1);
+
+    }
+
+    @Test
+    void testExcluirThrowException() {
+
+        Mockito.when(this.materiaRepository.findById(1L)).thenReturn(Optional.of(materiaEntity));
+        Mockito.doThrow(IllegalStateException.class).when(this.materiaRepository).deleteById(1L);
+
+        MateriaException materiaException;
+
+        materiaException = assertThrows(MateriaException.class, ()->{
+            this.materiaService.excluir(1L);
+        });
+
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, materiaException.getHttpStatus());
+        assertEquals(MensagensConstant.ERRO_GENERICO.getValor(), materiaException.getMessage());
+
+        Mockito.verify(this.materiaRepository, times(1)).findById(1L);
+        Mockito.verify(this.materiaRepository, times(1)).deleteById(1L);
+
+    }
 
 }
