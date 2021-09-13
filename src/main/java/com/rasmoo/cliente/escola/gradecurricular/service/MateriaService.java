@@ -12,6 +12,7 @@ import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import com.rasmoo.cliente.escola.gradecurricular.constant.MensagensConstant;
 import com.rasmoo.cliente.escola.gradecurricular.controller.MateriaController;
 import com.rasmoo.cliente.escola.gradecurricular.dto.MateriaDto;
 import com.rasmoo.cliente.escola.gradecurricular.entity.MateriaEntity;
@@ -22,10 +23,8 @@ import com.rasmoo.cliente.escola.gradecurricular.repository.IMateriaRepository;
 @Service
 public class MateriaService implements IMateriaService {
 
-    private static final String MENSAGEM_ERRO = "Erro interno identificado. Contate o suporte";
-    private static final String MATERIA_NAO_ENCONTRADA = "Matéria não encontrada";
-    private final IMateriaRepository materiaRepository;
-    private final ModelMapper mapper;
+    private IMateriaRepository materiaRepository;
+    private ModelMapper mapper;
 
     @Autowired
     public MateriaService(IMateriaRepository materiaRepository) {
@@ -34,24 +33,20 @@ public class MateriaService implements IMateriaService {
     }
 
     @Override
-    public Boolean atualizar(final MateriaDto materia) {
+    public Boolean atualizar(MateriaDto materia) {
+
         try {
             this.consultar(materia.getId());
-            MateriaEntity materiaEntityAtualizada = this.mapper.map(materia, MateriaEntity.class);
-
-            this.materiaRepository.save(materiaEntityAtualizada);
-
-            return Boolean.TRUE;
-
+            return this.cadastrarOuAtualizar(materia);
         } catch (MateriaException m) {
             throw m;
         } catch (Exception e) {
-            throw new MateriaException(MENSAGEM_ERRO, HttpStatus.INTERNAL_SERVER_ERROR);
+            throw e;
         }
     }
 
     @Override
-    public Boolean excluir(final Long id) {
+    public Boolean excluir(Long id) {
         try {
             this.consultar(id);
             this.materiaRepository.deleteById(id);
@@ -59,23 +54,23 @@ public class MateriaService implements IMateriaService {
         } catch (MateriaException m) {
             throw m;
         } catch (Exception e) {
-            throw new MateriaException(MENSAGEM_ERRO, HttpStatus.INTERNAL_SERVER_ERROR);
+            throw e;
         }
     }
 
     @CachePut(key = "#id")
     @Override
-    public MateriaDto consultar(final Long id) {
+    public MateriaDto consultar(Long id) {
         try {
             Optional<MateriaEntity> materiaOptional = this.materiaRepository.findById(id);
             if (materiaOptional.isPresent()) {
                 return this.mapper.map(materiaOptional.get(), MateriaDto.class);
             }
-            throw new MateriaException(MATERIA_NAO_ENCONTRADA, HttpStatus.NOT_FOUND);
+            throw new MateriaException(MensagensConstant.ERRO_MATERIA_NAO_ENCONTRADA.getValor(), HttpStatus.NOT_FOUND);
         } catch (MateriaException m) {
             throw m;
         } catch (Exception e) {
-            throw new MateriaException(MENSAGEM_ERRO, HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new MateriaException(MensagensConstant.ERRO_GENERICO.getValor(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -83,46 +78,59 @@ public class MateriaService implements IMateriaService {
     @Override
     public List<MateriaDto> listar() {
         try {
-
             List<MateriaDto> materiaDto = this.mapper.map(this.materiaRepository.findAll(),
                     new TypeToken<List<MateriaDto>>() {
                     }.getType());
 
-            materiaDto.forEach(materia -> {
-
-                materia.add(WebMvcLinkBuilder
-                        .linkTo(WebMvcLinkBuilder.methodOn(MateriaController.class).consultaMateria(materia.getId()))
-                        .withSelfRel());
-            });
+            materiaDto.forEach(materia ->
+                    materia.add(WebMvcLinkBuilder
+                            .linkTo(WebMvcLinkBuilder.methodOn(MateriaController.class).consultarMateria(materia.getId()))
+                            .withSelfRel())
+            );
 
             return materiaDto;
 
         } catch (Exception e) {
-            throw new MateriaException(MENSAGEM_ERRO, HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new MateriaException(MensagensConstant.ERRO_GENERICO.getValor(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @Override
-    public Boolean cadastrar(final MateriaDto materia) {
+    public Boolean cadastrar(MateriaDto materia) {
         try {
-            MateriaEntity materiaEnt = this.mapper.map(materia, MateriaEntity.class);
-            this.materiaRepository.save(materiaEnt);
-            return Boolean.TRUE;
+            if(materia.getId() != null) {
+                throw new MateriaException(MensagensConstant.ERRO_ID_INFORMADO.getValor(),
+                        HttpStatus.BAD_REQUEST);
+            }
+
+            if (this.materiaRepository.findByCodigo(materia.getCodigo()) != null) {
+                throw new MateriaException(MensagensConstant.ERRO_MATERIA_CADASTRADA_ANTERIORMENTE.getValor(),
+                        HttpStatus.BAD_REQUEST);
+            }
+            return this.cadastrarOuAtualizar(materia);
+        } catch (MateriaException m) {
+            throw m;
         } catch (Exception e) {
-            throw new MateriaException(MENSAGEM_ERRO, HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new MateriaException(MensagensConstant.ERRO_GENERICO.getValor(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @Override
-    public List<MateriaDto> listarPorHorarioMinimo(final int horaMinima) {
+    public List<MateriaDto> listarPorHorarioMinimo(int horaMinima) {
         return this.mapper.map(this.materiaRepository.findByHoraMinima(horaMinima), new TypeToken<List<MateriaDto>>() {
         }.getType());
     }
 
     @Override
-    public List<MateriaDto> listarPorFrequencia(final int frequencia) {
+    public List<MateriaDto> listarPorFrequencia(int frequencia) {
         return this.mapper.map(this.materiaRepository.findByFrequencia(frequencia), new TypeToken<List<MateriaDto>>() {
         }.getType());
+    }
+
+    private Boolean cadastrarOuAtualizar(MateriaDto materia) {
+        MateriaEntity materiaEnt = this.mapper.map(materia, MateriaEntity.class);
+        this.materiaRepository.save(materiaEnt);
+        return Boolean.TRUE;
     }
 
 }
